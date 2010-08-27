@@ -40,7 +40,7 @@ class FatCopy(Application):
     def fatcopy_single(self, src, dest):
         srcbase = os.path.basename(src)
         if self.fs.isdir(dest):
-            dest = os.path.join(dest, srcbase)
+            dest = os.path.join(dest, self.fat_safe(srcbase))
 
         if not self.fs.isdir(src):
             self.fs.copyfile(src, dest)
