@@ -1,0 +1,59 @@
+#! /usr/bin/env python
+"""Script to recursively copy files and directories onto a FAT filesystem.
+
+Useful to copy music with *?: filenames onto my MP3 player."""
+
+import os.path
+import fsio
+import argparse
+
+class Application(object):
+    def parse_args(self, args):
+        parser = argparse.ArgumentParser(description='Copy files recursively in a FAT-safe way.')
+        parser.add_argument('src', metavar='src', type=str, nargs='+',
+                            help='the source file(s) or directories')
+        parser.add_argument('dest', metavar='dest', type=str,
+                            help='the destination file or directory')
+        parser.add_argument('--merge', dest='merge', action='store_const',
+                            const=True, default=False,
+                            help='assume existing files are OK')
+
+        return parser.parse_args(args)
+
+class FatCopy(Application):
+    def __init__(self, *args):
+        super(FatCopy, self).__init__()
+        self.args = self.parse_args(args)
+        self.fs = fsio
+
+    def fat_safe(self, fname):
+        return fname.replace('?', '_').replace('*', '_').replace(':', '_')
+
+    def fatcopy_list(self, srcs, dest):
+        if not self.fs.isdir(dest):
+            raise ArgumentError("{0} is not a directory".format(dest))
+
+        for fname in self.fs.listdir(src):
+            sfname = os.path.join(src, fname)
+            dfname = os.path.join(dest, fat_safe(fname))
+
+    def fatcopy_single(self, src, dest):
+        srcbase = os.path.basename(src)
+        if self.fs.isdir(dest):
+            dest = os.path.join(dest, srcbase)
+
+        if not self.fs.isdir(src):
+            self.fs.copyfile(src, dest)
+        else:
+            self.fs.mkdir(dest)
+            fatcopy_dir(src, dest)
+
+    def main(self, args):
+        if len(args.src) > 1:
+            fsio.mkdir(args.dest)
+
+        for src in args.src:
+            fatcopy(src, args.dest)
+
+if __name__ == '__main__':
+    FatCopy().main()
