@@ -3,6 +3,7 @@
 
 Useful to copy music with *?: filenames onto my MP3 player."""
 
+import sys
 import os.path
 import fsio
 import argparse
@@ -21,10 +22,10 @@ class Application(object):
         return parser.parse_args(args)
 
 class FatCopy(Application):
-    def __init__(self, *args):
+    def __init__(self):
         super(FatCopy, self).__init__()
-        self.args = self.parse_args(args)
         self.fs = fsio
+        self.args = None  # replaced with a call to argparse later
 
     def fat_safe(self, fname):
         return fname.replace('?', '_').replace('*', '_').replace(':', '_')
@@ -48,12 +49,13 @@ class FatCopy(Application):
             self.fs.mkdir(dest)
             fatcopy_dir(src, dest)
 
-    def main(self, args):
-        if len(args.src) > 1:
-            fsio.mkdir(args.dest)
+    def main(self, *args):
+        args = self.args = self.parse_args(args)
 
-        for src in args.src:
-            fatcopy(src, args.dest)
+        if len(args.src) == 1:
+            self.fatcopy_single(args.src[0], args.dest)
+        else:
+            self.fatcopy_list(args.src, args.dest)
 
 if __name__ == '__main__':
-    FatCopy().main()
+    FatCopy().main(*sys.argv)
