@@ -95,10 +95,12 @@ class FatCopyTest(unittest.TestCase):
                 (('Foo?/Bar:/Baz', 'New/Foo_/Bar_/Baz'), {})
                 ])
 
-    def test_copy_subdirs(self):
-        fs = {'tmp': ['a', 'b'], 'tmp/a': ['foo?'], 'tmp/b': ['bar?'], 'tmp/dest': []}
+    def test_slash_filenames(self):
+        fs = {'tmp': ['a/', 'b/'], 'tmp/a/': ['foo?'], 'tmp/b/': ['bar?'], 'tmp/dest/': []}
+        for key in fs.keys():
+            fs[key.rstrip('/')] = fs[key]
         self.fixture(fs)
-        self.app.fatcopy_list(['tmp/a', 'tmp/b'], 'tmp/dest')
+        self.app.fatcopy_list(['tmp/a/', 'tmp/b/'], 'tmp/dest')
 
         self.assertEqual(self.app.fs.mkdir.call_args_list, [
                 (('tmp/dest/a',), {}),

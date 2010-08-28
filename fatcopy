@@ -35,11 +35,13 @@ class FatCopy(Application):
             raise ValueError("{0} is not a directory".format(dest))
 
         for fname in srcs:
+            fname = fname.rstrip('/')
             srcbase = os.path.basename(fname)
             dfname = os.path.join(dest, self.fat_safe(srcbase))
             self.fatcopy_single(fname, dfname, recurse=True)
 
     def fatcopy_single(self, src, dest, recurse=False):
+        src = src.rstrip('/')
         if self.fs.isdir(src) and self.fs.exists(dest) and not self.fs.isdir(dest):
             raise ValueError("cannot overwrite non-directory {1} with directory {0}".format(src, dest))
 
