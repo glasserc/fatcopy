@@ -48,7 +48,9 @@ class FatCopy(Application):
             self.fs.copyfile(src, dest)
         else:
             self.fs.mkdir(dest)
-            self.fatcopy_list(self.fs.listdir(src), dest)
+            contents = self.fs.listdir(src)
+            contents = [os.path.join(src, x) for x in contents]
+            self.fatcopy_list(contents, dest)
 
     def main(self, *args):
         args = self.args = self.parse_args(args)
