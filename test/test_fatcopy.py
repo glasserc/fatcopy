@@ -42,20 +42,20 @@ class FatCopyTest(unittest.TestCase):
         self.fixture(fs)
         self.app.fatcopy_single('Foo?', 'New')
 
-        self.assertTrue(self.app.fs.mkdir.call_args, (
+        self.assertEqual(self.app.fs.mkdir.call_args, (
                 (("New",), {}),
                 (("New/Bar_",), {})))
-        self.assertTrue(self.app.fs.copyfile.call_args, ((("Foo?/Bar:/Baz", "New/Bar_/Baz"), {})))
+        self.assertEqual(self.app.fs.copyfile.call_args, ((("Foo?/Bar:/Baz", "New/Bar_/Baz"), {})))
 
     def test_copy_single_recurse_dir(self):
         fs = {'Foo?': ['Bar:'], 'Foo?/Bar:': ["Baz"], 'New': []}
         self.fixture(fs)
         self.app.fatcopy_single('Foo?', 'New')
 
-        self.assertTrue(self.app.fs.mkdir.call_args, (
+        self.assertEqual(self.app.fs.mkdir.call_args_list, [
                 (("New/Foo_",), {}),
-                (("New/Foo_/Bar_",), {})))
-        self.assertTrue(self.app.fs.copyfile.call_args, ((("Foo?/Bar:/Baz", "New/Foo_/Bar_/Baz"), {})))
+                (("New/Foo_/Bar_",), {})])
+        self.assertEqual(self.app.fs.copyfile.call_args, ((("Foo?/Bar:/Baz", "New/Foo_/Bar_/Baz"), {})))
 
     def test_copy_single_dir_failure(self):
         fs = {'Foo?': ['Bar:'], 'Foo?/Bar:': ["Baz"], 'New': None}
@@ -67,7 +67,7 @@ class FatCopyTest(unittest.TestCase):
         self.fixture(fs)
         self.app.fatcopy_list(['Foo?', 'Bar:'], 'New')
 
-        self.assertTrue(self.app.fs.copyfile.call_args, (
+        self.assertEqual(self.app.fs.copyfile.call_args, (
                 (('Foo?', 'New/Foo_'), {}),
                 (('Bar:', 'New/Bar_'), {})))
 
@@ -76,6 +76,6 @@ class FatCopyTest(unittest.TestCase):
         self.fixture(fs)
         self.app.fatcopy_list(['Foo?/Bar*', 'Baz/Eggs'], 'New')
 
-        self.assertTrue(self.app.fs.copyfile.call_args, (
+        self.assertEqual(self.app.fs.copyfile.call_args, (
                 (('Foo?/Bar*', 'New/Bar_'), {}),
                 (('Baz/Eggs', 'New/Eggs'), {})))
