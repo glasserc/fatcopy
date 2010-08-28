@@ -40,6 +40,7 @@ class FatCopy(Application):
             self.fatcopy_single(fname, dfname)
 
     def fatcopy_single(self, src, dest):
+        #print("Single: {0} -> {1}".format(src, dest))
         srcbase = os.path.basename(src)
         if self.fs.isdir(dest):
             dest = os.path.join(dest, self.fat_safe(srcbase))
