@@ -79,3 +79,14 @@ class FatCopyTest(unittest.TestCase):
         self.assertEqual(self.app.fs.copyfile.call_args_list, [
                 (('Foo?/Bar*', 'New/Bar_'), {}),
                 (('Baz/Eggs', 'New/Eggs'), {})])
+
+    @unittest.skip
+    def test_copy_no_overwrite(self):
+        '''Test that we don't overwrite our own files'''
+        fs = {'New': []}
+        self.fixture(fs)
+        self.app.fatcopy_list(['Foo?/Bar*', 'Baz/Bar?'], 'New')
+
+        self.assertEqual(self.app.fs.copyfile.call_args_list, [
+                (('Foo?/Bar*', 'New/Bar_'), {})
+                ])
