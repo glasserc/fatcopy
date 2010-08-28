@@ -8,7 +8,7 @@ except ImportError:
 
 class FatCopyTest(unittest.TestCase):
     def setUp(self):
-        self.app = fatcopy.FatCopy("foo", "bar")
+        self.app = fatcopy.FatCopy()
         self.app.fs = mock.Mock()
 
     def test_copy_single_nodir(self):
