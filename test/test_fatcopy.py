@@ -9,7 +9,7 @@ except ImportError:
 class FatCopyTest(unittest.TestCase):
     def setUp(self):
         self.app = fatcopy.FatCopy()
-        self.app.fs = mock.Mock()
+        self.app.fs = mock.Mock(fsio)
 
     def test_copy_single_nodir(self):
         self.app.fs.isdir.return_value = False
@@ -36,6 +36,7 @@ class FatCopyTest(unittest.TestCase):
         self.app.fs.isdir = lambda fname: fs.get(fname) != None
         self.app.fs.listdir = lambda fname: fs.get(fname)
         self.app.fs.exists = lambda fname: fname in fs
+        self.app.fs.mkdir.side_effect = lambda fname: fs.setdefault(fname, [])
 
     def test_copy_single_recurse(self):
         fs = {'Foo?': ['Bar:'], 'Foo?/Bar:': ["Baz"]}
@@ -79,6 +80,10 @@ class FatCopyTest(unittest.TestCase):
         self.assertEqual(self.app.fs.copyfile.call_args_list, [
                 (('Foo?/Bar*', 'New/Bar_'), {}),
                 (('Baz/Eggs', 'New/Eggs'), {})])
+
+    def test_copy_multiple_no_dir(self):
+        self.fixture({})
+        self.assertRaises(ValueError, self.app.fatcopy_list, ['Foo?/Bar*', 'Baz/Eggs'], 'New')
 
     @unittest.skip
     def test_copy_no_overwrite(self):

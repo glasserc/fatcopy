@@ -31,7 +31,7 @@ class FatCopy(Application):
         return fname.replace('?', '_').replace('*', '_').replace(':', '_')
 
     def fatcopy_list(self, srcs, dest):
-        if self.fs.exists(dest) and not self.fs.isdir(dest):
+        if not self.fs.isdir(dest):
             raise ValueError("{0} is not a directory".format(dest))
 
         for fname in srcs:
