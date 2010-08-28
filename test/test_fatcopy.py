@@ -57,8 +57,25 @@ class FatCopyTest(unittest.TestCase):
                 (("New/Foo_/Bar_",), {})))
         self.assertTrue(self.app.fs.copyfile.call_args, ((("Foo?/Bar:/Baz", "New/Foo_/Bar_/Baz"), {})))
 
-
     def test_copy_single_dir_failure(self):
         fs = {'Foo?': ['Bar:'], 'Foo?/Bar:': ["Baz"], 'New': None}
         self.fixture(fs)
         self.assertRaises(ValueError, self.app.fatcopy_single, "Foo?", "New")
+
+    def test_copy_multiple_local(self):
+        fs = {'New': []}
+        self.fixture(fs)
+        self.app.fatcopy_list(['Foo?', 'Bar:'], 'New')
+
+        self.assertTrue(self.app.fs.copyfile.call_args, (
+                (('Foo?', 'New/Foo_'), {}),
+                (('Bar:', 'New/Bar_'), {})))
+
+    def test_copy_multiple_subdirs(self):
+        fs = {'New': []}
+        self.fixture(fs)
+        self.app.fatcopy_list(['Foo?/Bar*', 'Baz/Eggs'], 'New')
+
+        self.assertTrue(self.app.fs.copyfile.call_args, (
+                (('Foo?/Bar*', 'New/Bar_'), {}),
+                (('Baz/Eggs', 'New/Eggs'), {})))
