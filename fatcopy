@@ -65,4 +65,4 @@ class FatCopy(Application):
             self.fatcopy_list(args.src, args.dest)
 
 if __name__ == '__main__':
-    FatCopy().main(*sys.argv)
+    FatCopy().main(*sys.argv[1:])
