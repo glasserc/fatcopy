@@ -31,12 +31,13 @@ class FatCopy(Application):
         return fname.replace('?', '_').replace('*', '_').replace(':', '_')
 
     def fatcopy_list(self, srcs, dest):
-        if not self.fs.isdir(dest):
-            raise ArgumentError("{0} is not a directory".format(dest))
+        if self.fs.exists(dest) and not self.fs.isdir(dest):
+            raise TypeError("{0} is not a directory".format(dest))
 
-        for fname in self.fs.listdir(src):
-            sfname = os.path.join(src, fname)
-            dfname = os.path.join(dest, fat_safe(fname))
+        for fname in srcs:
+            srcbase = os.path.basename(fname)
+            dfname = os.path.join(dest, self.fat_safe(srcbase))
+            self.fatcopy_single(fname, dfname)
 
     def fatcopy_single(self, src, dest):
         srcbase = os.path.basename(src)
@@ -47,7 +48,7 @@ class FatCopy(Application):
             self.fs.copyfile(src, dest)
         else:
             self.fs.mkdir(dest)
-            fatcopy_dir(src, dest)
+            self.fatcopy_list(self.fs.listdir(src), dest)
 
     def main(self, *args):
         args = self.args = self.parse_args(args)

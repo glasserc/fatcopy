@@ -31,3 +31,18 @@ class FatCopyTest(unittest.TestCase):
 
         self.assertTrue(self.app.fs.copyfile.called)
         self.assertEqual(self.app.fs.copyfile.call_args, (("a/b/c*?:", "d/e/c___"), {}))
+
+    def fixture(self, fs):
+        self.app.fs.isdir = lambda fname: fs.get(fname) != None
+        self.app.fs.listdir = lambda fname: fs.get(fname)
+        self.app.fs.exists = lambda fname: fname in fs
+
+    def test_copy_single_recurse(self):
+        fs = {'Foo?': ['Bar:'], 'Foo?/Bar:': ["Baz"]}
+        self.fixture(fs)
+        self.app.fatcopy_single('Foo?', 'New')
+
+        self.assertTrue(self.app.fs.mkdir.call_args, (
+                (("New",), {}),
+                (("New/Bar_",), {})))
+        self.assertTrue(self.app.fs.copyfile.call_args, ((("Foo?/Bar:/Baz", "New/Bar_/Baz"), {})))
