@@ -42,10 +42,10 @@ class FatCopyTest(unittest.TestCase):
         self.fixture(fs)
         self.app.fatcopy_single('Foo?', 'New')
 
-        self.assertEqual(self.app.fs.mkdir.call_args, (
+        self.assertEqual(self.app.fs.mkdir.call_args_list, [
                 (("New",), {}),
-                (("New/Bar_",), {})))
-        self.assertEqual(self.app.fs.copyfile.call_args, ((("Foo?/Bar:/Baz", "New/Bar_/Baz"), {})))
+                (("New/Bar_",), {})])
+        self.assertEqual(self.app.fs.copyfile.call_args_list, [(("Foo?/Bar:/Baz", "New/Bar_/Baz"), {})])
 
     def test_copy_single_recurse_dir(self):
         fs = {'Foo?': ['Bar:'], 'Foo?/Bar:': ["Baz"], 'New': []}
@@ -55,7 +55,7 @@ class FatCopyTest(unittest.TestCase):
         self.assertEqual(self.app.fs.mkdir.call_args_list, [
                 (("New/Foo_",), {}),
                 (("New/Foo_/Bar_",), {})])
-        self.assertEqual(self.app.fs.copyfile.call_args, ((("Foo?/Bar:/Baz", "New/Foo_/Bar_/Baz"), {})))
+        self.assertEqual(self.app.fs.copyfile.call_args_list, [(("Foo?/Bar:/Baz", "New/Foo_/Bar_/Baz"), {})])
 
     def test_copy_single_dir_failure(self):
         fs = {'Foo?': ['Bar:'], 'Foo?/Bar:': ["Baz"], 'New': None}
@@ -67,15 +67,15 @@ class FatCopyTest(unittest.TestCase):
         self.fixture(fs)
         self.app.fatcopy_list(['Foo?', 'Bar:'], 'New')
 
-        self.assertEqual(self.app.fs.copyfile.call_args, (
+        self.assertEqual(self.app.fs.copyfile.call_args_list, [
                 (('Foo?', 'New/Foo_'), {}),
-                (('Bar:', 'New/Bar_'), {})))
+                (('Bar:', 'New/Bar_'), {})])
 
     def test_copy_multiple_subdirs(self):
         fs = {'New': []}
         self.fixture(fs)
         self.app.fatcopy_list(['Foo?/Bar*', 'Baz/Eggs'], 'New')
 
-        self.assertEqual(self.app.fs.copyfile.call_args, (
+        self.assertEqual(self.app.fs.copyfile.call_args_list, [
                 (('Foo?/Bar*', 'New/Bar_'), {}),
-                (('Baz/Eggs', 'New/Eggs'), {})))
+                (('Baz/Eggs', 'New/Eggs'), {})])
