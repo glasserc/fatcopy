@@ -32,7 +32,7 @@ class FatCopy(Application):
 
     def fatcopy_list(self, srcs, dest):
         if self.fs.exists(dest) and not self.fs.isdir(dest):
-            raise TypeError("{0} is not a directory".format(dest))
+            raise ValueError("{0} is not a directory".format(dest))
 
         for fname in srcs:
             srcbase = os.path.basename(fname)
