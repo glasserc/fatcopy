@@ -85,6 +85,30 @@ class FatCopyTest(unittest.TestCase):
         self.fixture({})
         self.assertRaises(ValueError, self.app.fatcopy_list, ['Foo?/Bar*', 'Baz/Eggs'], 'New')
 
+    def test_merge(self):
+        fs = {'Foo?': ['Bar:'], 'Foo?/Bar:': ['Baz'], 'New': ['Foo_'], 'New/Foo_': ['Bar_'], 'New/Foo_/Bar_': ["Bleah"]}
+        self.fixture(fs)
+        self.app.fatcopy_single('Foo?', 'New')
+
+        self.assertFalse(self.app.fs.mkdir.called)
+        self.assertEqual(self.app.fs.copyfile.call_args_list, [
+                (('Foo?/Bar:/Baz', 'New/Foo_/Bar_/Baz'), {})
+                ])
+
+    def test_copy_subdirs(self):
+        fs = {'tmp': ['a', 'b'], 'tmp/a': ['foo?'], 'tmp/b': ['bar?'], 'tmp/dest': []}
+        self.fixture(fs)
+        self.app.fatcopy_list(['tmp/a', 'tmp/b'], 'tmp/dest')
+
+        self.assertEqual(self.app.fs.mkdir.call_args_list, [
+                (('tmp/dest/a',), {}),
+                (('tmp/dest/b',), {})
+                ])
+        self.assertEqual(self.app.fs.copyfile.call_args_list, [
+                (('tmp/a/foo?', 'tmp/dest/a/foo_'), {}),
+                (('tmp/b/bar?', 'tmp/dest/b/bar_'), {})
+                ])
+
     @unittest.skip
     def test_copy_no_overwrite(self):
         '''Test that we don't overwrite our own files'''

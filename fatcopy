@@ -37,21 +37,21 @@ class FatCopy(Application):
         for fname in srcs:
             srcbase = os.path.basename(fname)
             dfname = os.path.join(dest, self.fat_safe(srcbase))
-            self.fatcopy_single(fname, dfname)
+            self.fatcopy_single(fname, dfname, recurse=True)
 
-    def fatcopy_single(self, src, dest):
-        #print("Single: {0} -> {1}".format(src, dest))
-        srcbase = os.path.basename(src)
+    def fatcopy_single(self, src, dest, recurse=False):
         if self.fs.isdir(src) and self.fs.exists(dest) and not self.fs.isdir(dest):
             raise ValueError("cannot overwrite non-directory {1} with directory {0}".format(src, dest))
 
-        if self.fs.isdir(dest):
+        srcbase = os.path.basename(src)
+        if self.fs.isdir(dest) and not recurse:
             dest = os.path.join(dest, self.fat_safe(srcbase))
 
         if not self.fs.isdir(src):
             self.fs.copyfile(src, dest)
         else:
-            self.fs.mkdir(dest)
+            if not self.fs.exists(dest):
+                self.fs.mkdir(dest)
             contents = self.fs.listdir(src)
             contents = [os.path.join(src, x) for x in contents]
             self.fatcopy_list(contents, dest)
