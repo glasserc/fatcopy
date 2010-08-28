@@ -42,6 +42,9 @@ class FatCopy(Application):
     def fatcopy_single(self, src, dest):
         #print("Single: {0} -> {1}".format(src, dest))
         srcbase = os.path.basename(src)
+        if self.fs.isdir(src) and self.fs.exists(dest) and not self.fs.isdir(dest):
+            raise ValueError("cannot overwrite non-directory {1} with directory {0}".format(src, dest))
+
         if self.fs.isdir(dest):
             dest = os.path.join(dest, self.fat_safe(srcbase))
 
