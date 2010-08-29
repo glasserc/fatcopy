@@ -97,6 +97,7 @@ class FatCopyTest(unittest.TestCase):
 
     def test_slash_filenames(self):
         fs = {'tmp': ['a/', 'b/'], 'tmp/a/': ['foo?'], 'tmp/b/': ['bar?'], 'tmp/dest/': []}
+        # Filenames exist as given, but they exist without slashes too
         for key in fs.keys():
             fs[key.rstrip('/')] = fs[key]
         self.fixture(fs)
