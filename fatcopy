@@ -50,7 +50,10 @@ class FatCopy(Application):
             dest = os.path.join(dest, self.fat_safe(srcbase))
 
         if not self.fs.isdir(src):
-            self.fs.copyfile(src, dest)
+            if self.fs.exists(dest):
+                print("Skipping {0} -> {1}".format(src, dest))
+            else:
+                self.fs.copyfile(src, dest)
         else:
             if not self.fs.exists(dest):
                 self.fs.mkdir(dest)
