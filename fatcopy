@@ -28,7 +28,7 @@ class FatCopy(Application):
         self.args = None  # replaced with a call to argparse later
 
     def fat_safe(self, fname):
-        return fname.replace('?', '_').replace('*', '_').replace(':', '_')
+        return fname.replace('?', '_').replace('*', '_').replace(':', '_').replace('"', '_')
 
     def fatcopy_list(self, srcs, dest):
         if not self.fs.isdir(dest):
